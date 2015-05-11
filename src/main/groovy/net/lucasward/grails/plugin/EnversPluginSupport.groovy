@@ -18,14 +18,14 @@ package net.lucasward.grails.plugin
 
 import org.hibernate.SessionFactory
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import grails.core.GrailsDomainClass
 import java.util.concurrent.ConcurrentHashMap
 import org.hibernate.Session
 import org.hibernate.envers.AuditReaderFactory
 import org.hibernate.envers.Audited
 
 import org.springframework.core.annotation.AnnotationUtils
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import grails.core.GrailsDomainClassProperty
 import net.lucasward.grails.plugin.criteria.IdentityCriteria
 import net.lucasward.grails.plugin.criteria.PropertyNameCriteria
 

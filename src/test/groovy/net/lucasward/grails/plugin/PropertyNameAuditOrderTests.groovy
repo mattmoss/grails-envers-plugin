@@ -32,60 +32,60 @@ class PropertyNameAuditOrderTests extends Specification {
     PropertyNameAuditOrder auditOrder
     String propertyName = "name"
 
-    @Before
-    void before() {
+    
+    def setup() {
         auditOrder = new PropertyNameAuditOrder()
     }
 
-    void testSortByPropertyNameDesc() {
+    def testSortByPropertyNameDesc() {
         withMock([:]) {query, property, order, auditEntity ->
             auditOrder.addOrder(query, [sort: propertyName, order: "desc"])
         }
     }
 
-    void testSortByPropertyNameAsc() {
+    def testSortByPropertyNameAsc() {
         withMock([:]) {query, property, order, auditEntity ->
             auditOrder.addOrder(query, [sort: propertyName, order: "asc"])
         }
     }
 
-    void testSortByAllCapsDirection() {
+    def testSortByAllCapsDirection() {
         withMock([:]) {query, property, order, auditEntity ->
             auditOrder.addOrder(query, [sort: propertyName, order: "DESC"])
         }
     }
 
-    void testSortByPropertyNameDefaultOrdering() {
+    def testSortByPropertyNameDefaultOrdering() {
         withMock([:]) {query, property, order, auditEntity ->
             auditOrder.addOrder(query, [sort: propertyName])
         }
     }
 
-    void testSortByPropertyNameWithNoParams() {
+    def testSortByPropertyNameWithNoParams() {
         withMock([:]) {query, property, order, auditEntity ->
             auditOrder.addOrder(query, [:])
         }
     }
 
-    void testSortByRevisionNumberDesc() {
+    def testSortByRevisionNumberDesc() {
         withMock([:]) {query, property, order, auditEntity ->
             auditOrder.addOrder(query, [sort: "revisionNumber", order: "desc"])
         }
     }
 
-    void testSortByRevisionType() {
+    def testSortByRevisionType() {
         withMock([:]) {query, property, order, auditEntity ->
             auditOrder.addOrder(query, [sort: "revisionType", order: "desc"])
         }
     }
 
-    void testSortByRevisionProperty() {
+    def testSortByRevisionProperty() {
         withMock([:]) {query, property, order, auditEntity ->
             auditOrder.addOrder(query, [sort: "revisionProperty.userId", order: "desc"])
         }
     }
 
-    private void withMock(Map options, Closure doIt) {
+    private def withMock(Map options, Closure doIt) {
         AuditQuery queryMock = Mock(AuditQuery)
         AuditProperty propertyMock = Mock(AuditProperty)
         AuditOrder orderMock = Mock(AuditOrder)
