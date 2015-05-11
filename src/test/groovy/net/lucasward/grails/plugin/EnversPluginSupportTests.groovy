@@ -16,33 +16,45 @@
 
 package net.lucasward.grails.plugin
 
-import grails.test.GrailsMock
+import junit.framework.TestCase;
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import grails.test.mixin.TestMixin
+import grails.test.mixin.support.GrailsUnitTestMixin
+import org.grails.core.DefaultGrailsDomainClass
+
+import grails.core.GrailsDomainClass
+
 import org.hibernate.SessionFactory
 import org.hibernate.envers.DefaultRevisionEntity
 import org.hibernate.envers.RevisionType
 
+/**
+ * TODO figure out how to use spock-mocking api without the unit-test syntax overhead.
+ * Create a spock helper
+ * @author Labi Oyapero
+ *
+ */
 @TestFor(Customer)
-class EnversPluginSupportTests {
+@TestMixin(GrailsUnitTestMixin)
+class EnversPluginSupportTests extends TestCase{
 
-    void testIsAudited() {
+    public void testIsAudited() {
         def gc = new DefaultGrailsDomainClass(Address)
         assert EnversPluginSupport.isAudited(gc) == true
     }
 
-    void testIsNotAudited() {
+    public void testIsNotAudited() {
         def gc = new DefaultGrailsDomainClass(State)
         assert EnversPluginSupport.isAudited(gc) == false
     }
 
-    void testIsAuditedAtFieldLevelOnly() {
+    public void testIsAuditedAtFieldLevelOnly() {
         def gc = new DefaultGrailsDomainClass(User)
         assert EnversPluginSupport.isAudited(gc) == true
     }
 
-    void testCollapseRevisions() {
+    public void testCollapseRevisions() {
         Customer user = new Customer(name: 'collapseTest');
         DefaultRevisionEntity revisionEntity = new DefaultRevisionEntity(id: 1)
         RevisionType revType = RevisionType.ADD
@@ -55,41 +67,37 @@ class EnversPluginSupportTests {
         assert collapsed.revisionType == RevisionType.ADD
     }
 
-    void testCollapseRevisionsWithTooSmallArray() {
+    public void testCollapseRevisionsWithTooSmallArray() {
         shouldFail {
             EnversPluginSupport.collapseRevision([])
         }
     }
 
-    void testCollapseRevisionsWithTooLargeArray() {
+    public void testCollapseRevisionsWithTooLargeArray() {
         shouldFail {
             EnversPluginSupport.collapseRevision([1, 2, 3, 4])
         }
     }
 
-    void testGenerateFindAllMethods() {
-        GrailsMock sessionFactory = mockFor(SessionFactory)
+    public void testGenerateFindAllMethods() {
+        SessionFactory sessionFactory = [] as SessionFactory;
         GrailsDomainClass gdc = new DefaultGrailsDomainClass(Customer.class)
-        EnversPluginSupport.generateFindAllMethods(gdc, sessionFactory.createMock())
+        EnversPluginSupport.generateFindAllMethods(gdc, sessionFactory)//.createMock()
 
         assert Customer.metaClass.getStaticMetaMethod("findAllRevisionsByEmail", ["Email"]) != null
         assert Customer.metaClass.getStaticMetaMethod("findAllRevisionsByName", ["Email"]) != null
         assert Customer.metaClass.getStaticMetaMethod("findAllRevisionsByAddress", ["Email"]) != null
         assert Customer.metaClass.getStaticMetaMethod("findAllRevisionsById", ["Email"]) != null
-
-        sessionFactory.verify()
     }
 
-    void testGenerateAuditReaderMethods() {
-        GrailsMock sessionFactory = mockFor(SessionFactory)
+    public void testGenerateAuditReaderMethods() {
+        SessionFactory sessionFactory = [] as SessionFactory;
         GrailsDomainClass gdc = new DefaultGrailsDomainClass(Customer.class)
-        EnversPluginSupport.generateAuditReaderMethods(gdc, sessionFactory.createMock())
+        EnversPluginSupport.generateAuditReaderMethods(gdc, sessionFactory)//sessionFactory.createMock()
 
         assert Customer.metaClass.getStaticMetaMethod("getCurrentRevision", []) != null
         assert Customer.metaClass.getMetaMethod("retrieveRevisions", []) != null
         assert Customer.metaClass.getMetaMethod("findAtRevision", [3]) != null
-
-        sessionFactory.verify()
     }
 
 }

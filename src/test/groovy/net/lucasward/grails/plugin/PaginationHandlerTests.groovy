@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+   * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,52 +16,55 @@
 
 package net.lucasward.grails.plugin
 
+import junit.framework.TestCase;
+
 import org.hibernate.envers.query.AuditQuery
-import grails.test.GrailsMock
+
 import grails.test.mixin.TestFor
+import grails.test.mixin.TestMixin;
+import grails.test.mixin.support.GrailsUnitTestMixin;
+
 import org.junit.Before
 
+import spock.lang.Specification;
+
 @TestFor(Customer)
-class PaginationHandlerTests {
+@TestMixin(GrailsUnitTestMixin)
+class PaginationHandlerTests extends TestCase{
 
     PaginationHandler handler
 
-    @Before
-    void before() {
+    void setUp() {
         handler = new PaginationHandler()
     }
 
     void testAddMax() {
-        GrailsMock mockQuery = mockFor(AuditQuery)
-        mockQuery.demand.setMaxResults(1) {int i -> assert i == 10}
-
-        handler.addPagination(mockQuery.createMock(), [max: 10])
-
-        mockQuery.verify()
+        AuditQuery mockQuery = [setMaxResults: {int i -> assert i == 10}] as AuditQuery;
+        /*AuditQuery mockQuery = Mock(AuditQuery)
+        mockQuery.demand.setMaxResults(1) */
+        handler.addPagination(mockQuery, [max: 10])
     }
 
     void testCallWithoutMax() {
-        GrailsMock mockQuery = mockFor(AuditQuery)
-
-        handler.addPagination(mockQuery.createMock(), [:])
-
-        mockQuery.verify()
+      AuditQuery mockQuery = [] as AuditQuery;
+        //AuditQuery mockQuery = Mock(AuditQuery)
+      handler.addPagination(mockQuery, [:])
     }
 
     void testAddOffset() {
-        GrailsMock mockQuery = mockFor(AuditQuery)
-        mockQuery.demand.setFirstResult(1) {int i -> assert i == 10}
+      AuditQuery mockQuery = [setFirstResult: {int i -> assert i == 10}] as AuditQuery;
+        //AuditQuery mockQuery = Mock(AuditQuery)
+        //mockQuery.demand.setFirstResult(1) {int i -> assert i == 10}
 
-        handler.addPagination(mockQuery.createMock(), [offset: 10])
-
-        mockQuery.verify()
+        handler.addPagination(mockQuery, [offset: 10])
     }
 
     void testCallWithoutOffset() {
-        GrailsMock mockQuery = mockFor(AuditQuery)
+      AuditQuery mockQuery = [] as AuditQuery;
+        //AuditQuery mockQuery = Mock(AuditQuery)
 
-        handler.addPagination(mockQuery.createMock(), [:])
+        handler.addPagination(mockQuery, [:])
 
-        mockQuery.verify()
+        //mockQuery.verify()
     }
 }

@@ -14,3 +14,4 @@ target-eclipse/
 .DS_Store
 .link_to_grails_plugins
 /build/
+/bin/

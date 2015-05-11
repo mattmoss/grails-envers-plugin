@@ -16,16 +16,18 @@
 
 package net.lucasward.grails.plugin
 
-import grails.test.GrailsMock
 import grails.test.mixin.TestFor
+
 import org.hibernate.envers.query.AuditEntity
 import org.hibernate.envers.query.AuditQuery
 import org.hibernate.envers.query.criteria.AuditProperty
 import org.hibernate.envers.query.order.AuditOrder
 import org.junit.Before
 
+import spock.lang.Specification;
+
 @TestFor(Customer)
-class PropertyNameAuditOrderTests {
+class PropertyNameAuditOrderTests extends Specification {
 
     PropertyNameAuditOrder auditOrder
     String propertyName = "name"
@@ -84,10 +86,10 @@ class PropertyNameAuditOrderTests {
     }
 
     private void withMock(Map options, Closure doIt) {
-        GrailsMock queryMock = mockFor(AuditQuery, true)
-        GrailsMock propertyMock = mockFor(AuditProperty, true)
-        GrailsMock orderMock = mockFor(AuditOrder, true)
-        GrailsMock auditEntityMock = mockFor(AuditEntity, true)
+        AuditQuery queryMock = Mock(AuditQuery)
+        AuditProperty propertyMock = Mock(AuditProperty)
+        AuditOrder orderMock = Mock(AuditOrder)
+        AuditEntity auditEntityMock = Mock(AuditEntity)
 
         propertyMock.demand.desc(0..100) {->
             return orderMock.createMock()
