@@ -16,6 +16,8 @@
 
 package net.lucasward.grails.plugin
 
+import groovy.mock.interceptor.MockFor
+
 import grails.test.mixin.TestFor
 
 import org.hibernate.envers.query.AuditEntity
@@ -23,6 +25,7 @@ import org.hibernate.envers.query.AuditQuery
 import org.hibernate.envers.query.criteria.AuditProperty
 import org.hibernate.envers.query.order.AuditOrder
 import org.junit.Before
+import org.junit.Test;
 
 import spock.lang.Specification;
 
@@ -37,55 +40,137 @@ class PropertyNameAuditOrderTests extends Specification {
         auditOrder = new PropertyNameAuditOrder()
     }
 
+    
     def testSortByPropertyNameDesc() {
-        withMock([:]) {query, property, order, auditEntity ->
-            auditOrder.addOrder(query, [sort: propertyName, order: "desc"])
-        }
+      AuditOrder order = Mock(AuditOrder)
+      AuditQuery query = Mock(AuditQuery)
+      AuditProperty property = GroovyMock(AuditProperty, global:true)
+      PropertyNameAuditOrder auditOrder1 = Spy(PropertyNameAuditOrder)
+      
+      when:
+      assert auditOrder1
+      auditOrder1.addOrder(query, [sort: propertyName, order: "desc"])
+        
+      then: 
+      1 * auditOrder1.addOrder(*_);
+      1 * property.desc();
+      1 * query.addOrder(*_)
     }
 
-    def testSortByPropertyNameAsc() {
-        withMock([:]) {query, property, order, auditEntity ->
-            auditOrder.addOrder(query, [sort: propertyName, order: "asc"])
-        }
+    void testSortByPropertyNameAsc() {
+      AuditOrder order = Mock(AuditOrder)
+      AuditQuery query = Mock(AuditQuery)
+      AuditProperty property = GroovyMock(AuditProperty, global:true)
+      PropertyNameAuditOrder auditOrder1 = Spy(PropertyNameAuditOrder)
+      
+      when:
+      assert auditOrder1
+      auditOrder1.addOrder(query, [sort: propertyName, order: "asc"])
+        
+      then: 
+      1 * auditOrder1.addOrder(*_);
+      1 * property.asc();
+      1 * query.addOrder(*_)
     }
 
-    def testSortByAllCapsDirection() {
-        withMock([:]) {query, property, order, auditEntity ->
-            auditOrder.addOrder(query, [sort: propertyName, order: "DESC"])
-        }
+    void testSortByAllCapsDirection() {
+      AuditOrder order = Mock(AuditOrder)
+      AuditQuery query = Mock(AuditQuery)
+      AuditProperty property = GroovyMock(AuditProperty, global:true)
+      PropertyNameAuditOrder auditOrder1 = Spy(PropertyNameAuditOrder)
+      
+      when:
+      assert auditOrder1
+      auditOrder1.addOrder(query, [sort: propertyName, order: "DESC"])
+        
+      then: 
+      1 * auditOrder1.addOrder(*_);
+      1 * property.desc();
+      1 * query.addOrder(*_)
     }
 
-    def testSortByPropertyNameDefaultOrdering() {
-        withMock([:]) {query, property, order, auditEntity ->
-            auditOrder.addOrder(query, [sort: propertyName])
-        }
+    void testSortByPropertyNameDefaultOrdering() {
+      AuditOrder order = Mock(AuditOrder)
+      AuditQuery query = Mock(AuditQuery)
+      AuditProperty property = GroovyMock(AuditProperty, global:true)
+      PropertyNameAuditOrder auditOrder1 = Spy(PropertyNameAuditOrder)
+      
+      when:
+      assert auditOrder1
+      auditOrder1.addOrder(query, [sort: propertyName])
+        
+      then: 
+      1 * auditOrder1.addOrder(*_);
+      1 * property.asc();
+      1 * query.addOrder(*_)
     }
 
-    def testSortByPropertyNameWithNoParams() {
-        withMock([:]) {query, property, order, auditEntity ->
-            auditOrder.addOrder(query, [:])
-        }
+    void testSortByPropertyNameWithNoParams() {
+      AuditOrder order = Mock(AuditOrder)
+      AuditQuery query = Mock(AuditQuery)
+      AuditProperty property = GroovyMock(AuditProperty, global:true)
+      PropertyNameAuditOrder auditOrder1 = Spy(PropertyNameAuditOrder)
+      
+      when:
+      assert auditOrder1
+      auditOrder1.addOrder(query, [:])
+        
+      then: 
+      1 * auditOrder1.addOrder(*_);
+      0 * property.asc();
+      0 * query.addOrder(*_)
     }
 
-    def testSortByRevisionNumberDesc() {
-        withMock([:]) {query, property, order, auditEntity ->
-            auditOrder.addOrder(query, [sort: "revisionNumber", order: "desc"])
-        }
+    void testSortByRevisionNumberDesc() {
+      AuditOrder order = Mock(AuditOrder)
+      AuditQuery query = Mock(AuditQuery)
+      AuditProperty property = GroovyMock(AuditProperty, global:true)
+      PropertyNameAuditOrder auditOrder1 = Spy(PropertyNameAuditOrder)
+      
+      when:
+      assert auditOrder1
+      auditOrder1.addOrder(query, [sort: "revisionNumber", order: "desc"])
+        
+      then: 
+      1 * auditOrder1.addOrder(*_);
+      1 * property.desc();
+      1 * query.addOrder(*_)
     }
 
-    def testSortByRevisionType() {
-        withMock([:]) {query, property, order, auditEntity ->
-            auditOrder.addOrder(query, [sort: "revisionType", order: "desc"])
-        }
+    void testSortByRevisionType() {
+      AuditOrder order = Mock(AuditOrder)
+      AuditQuery query = Mock(AuditQuery)
+      AuditProperty property = GroovyMock(AuditProperty, global:true)
+      PropertyNameAuditOrder auditOrder1 = Spy(PropertyNameAuditOrder)
+      
+      when:
+      assert auditOrder1
+      auditOrder1.addOrder(query, [sort: "revisionType", order: "desc"])
+        
+      then: 
+      1 * auditOrder1.addOrder(*_);
+      1 * property.desc();
+      1 * query.addOrder(*_)
     }
 
-    def testSortByRevisionProperty() {
-        withMock([:]) {query, property, order, auditEntity ->
-            auditOrder.addOrder(query, [sort: "revisionProperty.userId", order: "desc"])
-        }
+    void testSortByRevisionProperty() {
+      AuditOrder order = Mock(AuditOrder)
+      AuditQuery query = Mock(AuditQuery)
+      AuditProperty property = GroovyMock(AuditProperty, global:true)
+      PropertyNameAuditOrder auditOrder1 = Spy(PropertyNameAuditOrder)
+      
+      when:
+      assert auditOrder1
+      auditOrder1.addOrder(query, [sort: "revisionProperty.userId", order: "desc"])
+        
+      then: 
+      1 * auditOrder1.addOrder(*_);
+      1 * property.desc();
+      1 * query.addOrder(*_)
     }
 
-    private def withMock(Map options, Closure doIt) {
+    /*private void withMock(Map options, Closure doIt) {
+      
         AuditQuery queryMock = Mock(AuditQuery)
         AuditProperty propertyMock = Mock(AuditProperty)
         AuditOrder orderMock = Mock(AuditOrder)
@@ -117,5 +202,5 @@ class PropertyNameAuditOrderTests extends Specification {
                 orderMock.createMock(),
                 auditEntityMock.createMock()
         )
-    }
+    }*/
 }
