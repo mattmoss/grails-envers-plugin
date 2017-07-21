@@ -30,12 +30,11 @@ class EnversGrailsPlugin extends Plugin {
 
     // TODO Fill in these fields
     def title = 'Grails Envers Plugin' // Headline display name of the plugin
-    def author = 'Lucas Ward, Jay Hogan'
+    def author = 'Lucas Ward, Jay Hogan, Colin Harrington'
     def authorEmail = ""
     def description = '''\
 Plugin to integrate grails with Hibernate Envers
 '''
-    def profiles = ['web']
 
     // URL to the plugin's documentation
     def documentation = "http://grails.org/plugin/envers"
@@ -59,14 +58,14 @@ Plugin to integrate grails with Hibernate Envers
 
     Closure doWithSpring() { {->
             // TODO Implement runtime spring config (optional)
-        } 
+        }
     }
 
     void doWithDynamicMethods() { //TODO find the context
         // TODO Implement registering dynamic methods to classes (optional)
-      for (entry in ctx.getBeansOfType(SessionFactory)) {
+      for (entry in applicationContext.getBeansOfType(SessionFactory)) {
         SessionFactory sessionFactory = entry.value
-        registerDomainMethods(application, sessionFactory)
+        registerDomainMethods(grailsApplication, sessionFactory)
       }
     }
     
