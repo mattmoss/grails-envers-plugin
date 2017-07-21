@@ -16,17 +16,23 @@
 
 package net.lucasward.grails.plugin
 
+import grails.test.mixin.integration.Integration
+import grails.transaction.Rollback
 import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.envers.AuditReader
 import org.hibernate.envers.AuditReaderFactory
 import org.hibernate.envers.RevisionType
 import org.hibernate.envers.query.AuditEntity
+import org.junit.Test
+
 import static net.lucasward.grails.plugin.TestData.getCreate2OrderEntriesWith1Modification
 import static net.lucasward.grails.plugin.TestData.getCreateGormCustomerWith2Modifications
 import static net.lucasward.grails.plugin.TestData.getCreateHibernateCustomerWith1Modification
 import static net.lucasward.grails.plugin.TestData.getDeleteAuditTables
 
+@Integration
+@Rollback
 class RevisionsOfEntityIntegrationTests extends GroovyTestCase {
 
     def transactional = false
@@ -37,23 +43,24 @@ class RevisionsOfEntityIntegrationTests extends GroovyTestCase {
     Session session
     AuditReader reader
 
-    User currentUser
+    Userr currentUser
 
-    protected void setUp() {
+    void setUp() {
         super.setUp()
         session = sessionFactory.currentSession
         reader = AuditReaderFactory.get(sessionFactory.currentSession)
 
-        currentUser = new User(userName: 'foo', realName: 'Bar').save(flush:  true, failOnError: true)
+        currentUser = new Userr(userName: 'foo', realName: 'Bar').save(flush:  true, failOnError: true)
         SpringSecurityServiceHolder.springSecurityService.currentUser = currentUser
     }
 
-    protected void tearDown() {
+    void tearDown() {
         super.tearDown()
 
         deleteAuditTables(session)
     }
 
+    @Test
     void testFindAllRevisions() {
         createGormCustomerWith2Modifications()
         def results = Customer.findAllRevisions()
@@ -172,25 +179,25 @@ class RevisionsOfEntityIntegrationTests extends GroovyTestCase {
     //test to see if Envers will work with a field level annotated domain class
     void testFieldLevelAudit() {
         def id
-        User.withTransaction() {
-            User user = new User(userName: "field", realName: "Annotated")
+        Userr.withTransaction() {
+            Userr user = new Userr(userName: "field", realName: "Annotated")
             user.save(flush: true)
             id = user.id
         }
 
-        User.withTransaction() {
-            User user = User.get(id)
+        Userr.withTransaction() {
+            Userr user = Userr.get(id)
             user.userName = "newField"
             user.save(flush: true)
         }
 
-        User.withTransaction() {
-            User user = User.get(id)
+        Userr.withTransaction() {
+            Userr user = Userr.get(id)
             user.realName = "Field Annotated"
             user.save(flush: true)
         }
 
-        def results = reader.createQuery().forRevisionsOfEntity(User.class, false, true).resultList
+        def results = reader.createQuery().forRevisionsOfEntity(Userr.class, false, true).resultList
 //        assert results.size() == 2
     }
 

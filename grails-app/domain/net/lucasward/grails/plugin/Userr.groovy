@@ -20,7 +20,7 @@ import org.hibernate.envers.Audited
 
 //I'm only using field level annotations to test them
 @Audited
-class User {
+class Userr {
     Long id
     String userName
     String realName

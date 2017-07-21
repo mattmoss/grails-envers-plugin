@@ -16,8 +16,7 @@
 
 package net.lucasward.grails.plugin
 
-import junit.framework.TestCase;
-import grails.test.mixin.Mock
+import junit.framework.TestCase
 import grails.test.mixin.TestFor
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
@@ -50,7 +49,7 @@ class EnversPluginSupportTests extends TestCase{
     }
 
     public void testIsAuditedAtFieldLevelOnly() {
-        def gc = new DefaultGrailsDomainClass(User)
+        def gc = new DefaultGrailsDomainClass(Userr)
         assert EnversPluginSupport.isAudited(gc) == true
     }
 
