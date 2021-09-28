@@ -16,25 +16,20 @@
 
 package net.lucasward.grails.plugin
 
-import junit.framework.TestCase;
-
+import grails.testing.gorm.DataTest
 import org.hibernate.envers.query.AuditQuery
+import spock.lang.Specification
 
-import grails.test.mixin.TestFor
-import grails.test.mixin.TestMixin;
-import grails.test.mixin.support.GrailsUnitTestMixin;
-
-import org.junit.Before
-
-import spock.lang.Specification;
-
-@TestFor(Customer)
-@TestMixin(GrailsUnitTestMixin)
-class PaginationHandlerTests extends TestCase{
+class PaginationHandlerTests extends Specification implements DataTest {
 
     PaginationHandler handler
 
-    void setUp() {
+    @Override
+    Class[] getDomainClassesToMock() {
+        [Customer]
+    }
+
+    void setup() {
         handler = new PaginationHandler()
     }
 

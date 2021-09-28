@@ -16,6 +16,7 @@
 
 package net.lucasward.grails.plugin
 
+import groovy.util.logging.Slf4j
 import org.hibernate.SessionFactory
 
 import grails.core.GrailsDomainClass
@@ -35,6 +36,7 @@ import net.lucasward.grails.plugin.criteria.PropertyNameCriteria
  *
  * @author Lucas Ward
  */
+@Slf4j
 class EnversPluginSupport {
 
     static def getAllRevisions(Class clazz, SessionFactory sessionFactory) {

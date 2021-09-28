@@ -16,26 +16,22 @@
 
 package net.lucasward.grails.plugin
 
-import groovy.mock.interceptor.MockFor
-
-import grails.test.mixin.TestFor
-
-import org.hibernate.envers.query.AuditEntity
+import grails.testing.gorm.DataTest
 import org.hibernate.envers.query.AuditQuery
 import org.hibernate.envers.query.criteria.AuditProperty
 import org.hibernate.envers.query.order.AuditOrder
-import org.junit.Before
-import org.junit.Test;
+import spock.lang.Specification
 
-import spock.lang.Specification;
-
-@TestFor(Customer)
-class PropertyNameAuditOrderTests extends Specification {
+class PropertyNameAuditOrderTests extends Specification implements DataTest {
 
     PropertyNameAuditOrder auditOrder
     String propertyName = "name"
 
-    
+    @Override
+    Class[] getDomainClassesToMock() {
+        [Customer]
+    }
+
     def setup() {
         auditOrder = new PropertyNameAuditOrder()
     }

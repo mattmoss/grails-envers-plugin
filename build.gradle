@@ -32,6 +32,9 @@ dependencies {
     provided "org.grails:grails-plugin-domain-class"
     //runtime 'org.grails:grails-datastore-test-support'
     testCompile "org.grails:grails-plugin-testing"
+    testCompile "org.grails:grails-gorm-testing-support"
+    testCompile "org.grails:grails-web-testing-support"
+    testCompile "cglib:cglib-nodep:3.2.0"
 }
 
 bootRun {
