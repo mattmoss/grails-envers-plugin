@@ -20,46 +20,51 @@ import grails.testing.gorm.DataTest
 import org.hibernate.envers.query.AuditQuery
 import spock.lang.Specification
 
-class PaginationHandlerTests extends Specification implements DataTest {
+class PaginationHandlerTests extends Specification {
 
-    PaginationHandler handler
-
-    @Override
-    Class[] getDomainClassesToMock() {
-        [Customer]
-    }
-
-    void setup() {
-        handler = new PaginationHandler()
-    }
+    PaginationHandler handler = new PaginationHandler()
 
     void testAddMax() {
-        AuditQuery mockQuery = [setMaxResults: {int i -> assert i == 10}] as AuditQuery;
-        /*AuditQuery mockQuery = Mock(AuditQuery)
-        mockQuery.demand.setMaxResults(1) */
-        handler.addPagination(mockQuery, [max: 10])
+        given:
+        AuditQuery query = Mock(AuditQuery)
+
+        when:
+        handler.addPagination(query, [max: 10])
+
+        then:
+        1 * query.setMaxResults(10)
     }
 
     void testCallWithoutMax() {
-      AuditQuery mockQuery = [] as AuditQuery;
-        //AuditQuery mockQuery = Mock(AuditQuery)
-      handler.addPagination(mockQuery, [:])
+        given:
+        AuditQuery query = Mock(AuditQuery)
+
+        when:
+        handler.addPagination(query, [:])
+
+        then:
+        0 * query.setMaxResults(_)
     }
 
     void testAddOffset() {
-      AuditQuery mockQuery = [setFirstResult: {int i -> assert i == 10}] as AuditQuery;
-        //AuditQuery mockQuery = Mock(AuditQuery)
-        //mockQuery.demand.setFirstResult(1) {int i -> assert i == 10}
+        given:
+        AuditQuery query = Mock(AuditQuery)
 
-        handler.addPagination(mockQuery, [offset: 10])
+        when:
+        handler.addPagination(query, [offset: 10])
+
+        then:
+        1 * query.setFirstResult(10)
     }
 
     void testCallWithoutOffset() {
-      AuditQuery mockQuery = [] as AuditQuery;
-        //AuditQuery mockQuery = Mock(AuditQuery)
+        given:
+        AuditQuery query = Mock(AuditQuery)
 
-        handler.addPagination(mockQuery, [:])
+        when:
+        handler.addPagination(query, [:])
 
-        //mockQuery.verify()
+        then:
+        0 * query.setFirstResult(_)
     }
 }
