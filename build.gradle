@@ -14,7 +14,7 @@ group "org.grails.plugins"
 apply plugin:"eclipse"
 apply plugin:"idea"
 apply plugin:"org.grails.grails-plugin"
-apply plugin:"org.grails.grails-plugin-publish"
+//apply plugin:"org.grails.grails-plugin-publish"
 
 repositories {
     mavenLocal()
@@ -31,7 +31,7 @@ dependencies {
     provided "org.grails:grails-plugin-services"
     provided "org.grails:grails-plugin-domain-class"
     //runtime 'org.grails:grails-datastore-test-support'
-    testCompile "org.grails:grails-plugin-testing"
+//    testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.grails:grails-web-testing-support"
     testCompile "cglib:cglib-nodep:3.2.0"
@@ -39,19 +39,20 @@ dependencies {
 
 bootRun {
     jvmArgs('-Dspring.output.ansi.enabled=always')
-    addResources = true
+//    addResources = true
 }
-// enable if you wish to package this plugin as a standalone application
-bootRepackage.enabled = false
-grailsPublish {
-    // TODO: Provide values here
-    user = 'user'
-    key = 'key'
-    githubSlug = 'foo/bar'
-    license {
-        name = 'Apache-2.0'
-    }
-    title = "My Plugin"
-    desc = "Full plugin description"
-    developers = [johndoe:"John Doe"]
-}
+
+//// enable if you wish to package this plugin as a standalone application
+//bootRepackage.enabled = false
+//grailsPublish {
+//    // TODO: Provide values here
+//    user = 'user'
+//    key = 'key'
+//    githubSlug = 'foo/bar'
+//    license {
+//        name = 'Apache-2.0'
+//    }
+//    title = "My Plugin"
+//    desc = "Full plugin description"
+//    developers = [johndoe:"John Doe"]
+//}
