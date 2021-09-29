@@ -17,18 +17,18 @@
 package net.lucasward.grails.plugin
 
 import groovy.util.logging.Slf4j
-import org.hibernate.SessionFactory
-
-import grails.core.GrailsDomainClass
-import java.util.concurrent.ConcurrentHashMap
-import org.hibernate.Session
-import org.hibernate.envers.AuditReaderFactory
-import org.hibernate.envers.Audited
-
-import org.springframework.core.annotation.AnnotationUtils
-import grails.core.GrailsDomainClassProperty
 import net.lucasward.grails.plugin.criteria.IdentityCriteria
 import net.lucasward.grails.plugin.criteria.PropertyNameCriteria
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.hibernate.Session
+import org.hibernate.SessionFactory
+import org.hibernate.envers.AuditReaderFactory
+import org.hibernate.envers.Audited
+import org.hibernate.envers.exception.NotAuditedException
+import org.springframework.core.annotation.AnnotationUtils
+
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Support classes for the plugin.  it's easier to test some of these methods separately than if they were in the main plugin file.  Most of the
@@ -39,9 +39,12 @@ import net.lucasward.grails.plugin.criteria.PropertyNameCriteria
 @Slf4j
 class EnversPluginSupport {
 
-    static def getAllRevisions(Class clazz, SessionFactory sessionFactory) {
+    static getAllRevisions(Class clazz, SessionFactory sessionFactory) {
         Session session = sessionFactory.currentSession
-        return AuditReaderFactory.get(sessionFactory.currentSession).createQuery().forRevisionsOfEntity(clazz, false, true).resultList
+        return AuditReaderFactory.get(sessionFactory.currentSession)
+                .createQuery()
+                .forRevisionsOfEntity(clazz, false, true)
+                .resultList
     }
 
     private static DOMAIN_INITIALIZERS = new ConcurrentHashMap()
@@ -56,8 +59,8 @@ class EnversPluginSupport {
     /**
      * For right now, only the presence of the @Audited annotation on the class will mean it's annotated
      */
-    static def isAudited = { GrailsDomainClass gc ->
-        return AnnotationUtils.findAnnotation(gc.clazz, Audited) != null
+    static isAudited(Class clazz) {
+        AnnotationUtils.findAnnotation(clazz, Audited) != null
     }
 
     /**
@@ -67,7 +70,7 @@ class EnversPluginSupport {
      * will collapse them down into one object, which is easy and somewhat idiomatic in groovy, but impossible in
      * java.
      */
-    static collapseRevision = { revision ->
+    static collapseRevision(revision) {
         if (revision.size() != 3) {
             def msg = "Invalid revision while attempting to collapse: [${revision}]"
             log.error(msg)
@@ -82,28 +85,32 @@ class EnversPluginSupport {
         return entity
     }
 
-    static generateFindAllMethods(GrailsDomainClass gc, SessionFactory sessionFactory) {
-        def findAllRevisionsBy = new RevisionsOfEntityQueryMethod(sessionFactory, gc.clazz, new PropertyNameCriteria())
-        MetaClass mc = gc.getMetaClass()
-        gc.persistentProperties.each { GrailsDomainClassProperty prop ->
+    static generateFindAllMethods(PersistentEntity entity, SessionFactory sessionFactory) {
+        MetaClass mc = entity.javaClass.metaClass
+        def findAllRevisionsBy = new RevisionsOfEntityQueryMethod(sessionFactory, entity.javaClass, new PropertyNameCriteria())
+
+        entity.persistentProperties.each { prop ->
             generateFindAllMethod(prop, mc, findAllRevisionsBy)
         }
-        generateFindAllMethod(gc.identifier, mc, new RevisionsOfEntityQueryMethod(sessionFactory, gc.clazz, new IdentityCriteria()))
+        generateFindAllMethod(entity.identity, mc,
+                new RevisionsOfEntityQueryMethod(sessionFactory, entity.javaClass, new IdentityCriteria()))
     }
 
     //Generate the methods that work on just 'AuditReader', and not and AuditQuery
-    static generateAuditReaderMethods(GrailsDomainClass gc, SessionFactory sessionFactory) {
-        def getCurrentRevision = new GetCurrentRevisionQuery(sessionFactory, gc.clazz)
-        def getRevisions = new GetRevisionsQuery(sessionFactory, gc.clazz)
-        def findAtRevision = new FindAtRevisionQuery(sessionFactory, gc.clazz)
-        MetaClass mc = gc.getMetaClass()
+    static generateAuditReaderMethods(PersistentEntity entity, SessionFactory sessionFactory) {
+        Class clazz = entity.javaClass
+        def getCurrentRevision = new GetCurrentRevisionQuery(sessionFactory, clazz)
+        def getRevisions = new GetRevisionsQuery(sessionFactory, clazz)
+        def findAtRevision = new FindAtRevisionQuery(sessionFactory, clazz)
+
+        MetaClass mc = clazz.metaClass
         mc.static.getCurrentRevision = {
             getCurrentRevision.query()
         }
         mc.retrieveRevisions = {
 			try {
 				return getRevisions.query(delegate.id)
-			} catch (org.hibernate.envers.exception.NotAuditedException ex) {
+			} catch (NotAuditedException ignored) {
 				// This indicates call to entity.revisions or entity.getProperties()
 				// In second case, we shouldn't throwing an exception clearly is unexpected behavior
 				return null;
@@ -114,13 +121,12 @@ class EnversPluginSupport {
         }
     }
 
-    private static def generateFindAllMethod(GrailsDomainClassProperty prop, MetaClass mc, method) {
+    private static generateFindAllMethod(PersistentProperty prop, MetaClass mc, RevisionsOfEntityQueryMethod method) {
         def propertyName = prop.name
         def methodName = "findAllRevisionsBy${propertyName.capitalize()}"
         mc.static."$methodName" = { argument ->
             method.query(propertyName, argument, [:])
         }
-
         mc.static."$methodName" = { argument, Map parameters ->
             method.query(propertyName, argument, parameters)
         }

@@ -16,13 +16,11 @@
 
 package net.lucasward.grails.plugin
 
-import grails.core.GrailsDomainClass
 import grails.testing.gorm.DataTest
-import org.grails.core.DefaultGrailsDomainClass
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.hibernate.SessionFactory
 import org.hibernate.envers.DefaultRevisionEntity
 import org.hibernate.envers.RevisionType
-import spock.lang.Ignore
 import spock.lang.Specification
 
 class EnversPluginSupportTests extends Specification implements DataTest {
@@ -33,27 +31,18 @@ class EnversPluginSupportTests extends Specification implements DataTest {
     }
 
     def testIsAudited() {
-        when:
-        def gc = new DefaultGrailsDomainClass(Address)
-
-        then:
-        EnversPluginSupport.isAudited(gc)
+        expect:
+        EnversPluginSupport.isAudited(Address)
     }
 
     def testIsNotAudited() {
-        when:
-        def gc = new DefaultGrailsDomainClass(State)
-
-        then:
-        !EnversPluginSupport.isAudited(gc)
+        expect:
+        !EnversPluginSupport.isAudited(State)
     }
 
     def testIsAuditedAtFieldLevelOnly() {
-        when:
-        def gc = new DefaultGrailsDomainClass(Userr)
-
-        then:
-        EnversPluginSupport.isAudited(gc)
+        expect:
+        EnversPluginSupport.isAudited(Userr)
     }
 
     def testCollapseRevisions() {
@@ -77,10 +66,6 @@ class EnversPluginSupportTests extends Specification implements DataTest {
 
         then:
         thrown(IllegalArgumentException)
-
-//        shouldFail {
-//            EnversPluginSupport.collapseRevision([])
-//        }
     }
 
     def testCollapseRevisionsWithTooLargeArray() {
@@ -89,18 +74,13 @@ class EnversPluginSupportTests extends Specification implements DataTest {
 
         then:
         thrown(IllegalArgumentException)
-
-//        shouldFail {
-//            EnversPluginSupport.collapseRevision([1, 2, 3, 4])
-//        }
     }
 
-    @Ignore("TODO")
     def testGenerateFindAllMethods() {
         when:
-        SessionFactory sessionFactory = [] as SessionFactory;
-        GrailsDomainClass gdc = new DefaultGrailsDomainClass(Customer.class)
-        EnversPluginSupport.generateFindAllMethods(gdc, sessionFactory)//.createMock()
+        SessionFactory sessionFactory = [] as SessionFactory
+        PersistentEntity entity = Customer.gormPersistentEntity
+        EnversPluginSupport.generateFindAllMethods(entity, sessionFactory)//.createMock()
 
         then:
         Customer.metaClass.getStaticMetaMethod("findAllRevisionsByEmail", ["Email"]) != null
@@ -112,8 +92,8 @@ class EnversPluginSupportTests extends Specification implements DataTest {
     def testGenerateAuditReaderMethods() {
         when:
         SessionFactory sessionFactory = [] as SessionFactory;
-        GrailsDomainClass gdc = new DefaultGrailsDomainClass(Customer.class)
-        EnversPluginSupport.generateAuditReaderMethods(gdc, sessionFactory)//sessionFactory.createMock()
+        PersistentEntity entity = Customer.gormPersistentEntity
+        EnversPluginSupport.generateAuditReaderMethods(entity, sessionFactory)//sessionFactory.createMock()
 
         then:
         Customer.metaClass.getStaticMetaMethod("getCurrentRevision", []) != null

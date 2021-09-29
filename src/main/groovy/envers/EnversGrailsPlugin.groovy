@@ -1,10 +1,9 @@
 package envers
 
-import grails.plugins.*
+import grails.core.GrailsApplication
+import grails.plugins.Plugin
 import net.lucasward.grails.plugin.EnversPluginSupport
 import net.lucasward.grails.plugin.RevisionsOfEntityQueryMethod
-import grails.core.GrailsApplication
-import grails.core.GrailsDomainClass
 import org.hibernate.SessionFactory
 
 class EnversGrailsPlugin extends Plugin {
@@ -69,27 +68,26 @@ Plugin to integrate grails with Hibernate Envers
       }
     }
     
-    
-    
-        private void registerDomainMethods(GrailsApplication application, SessionFactory sessionFactory) {
-            application.domainClasses.each { GrailsDomainClass gc ->
-                def getAllRevisions = new RevisionsOfEntityQueryMethod(sessionFactory, gc.clazz)
-                if (EnversPluginSupport.isAudited(gc)) {
-                    MetaClass mc = gc.getMetaClass()
-    
-                    mc.static.findAllRevisions = {
-                        getAllRevisions.query(null, null, [:])
-                    }
-    
-                    mc.static.findAllRevisions = { Map parameters ->
-                        getAllRevisions.query(null, null, parameters)
-                    }
-    
-                    EnversPluginSupport.generateFindAllMethods(gc, sessionFactory)
-                    EnversPluginSupport.generateAuditReaderMethods(gc, sessionFactory)
+    private void registerDomainMethods(GrailsApplication application, SessionFactory sessionFactory) {
+        application.mappingContext.persistentEntities.each { entity ->
+            if (EnversPluginSupport.isAudited(entity.javaClass)) {
+
+                MetaClass mc = entity.javaClass.getMetaClass()
+                def getAllRevisions = new RevisionsOfEntityQueryMethod(sessionFactory, entity.javaClass)
+
+                mc.static.findAllRevisions = {
+                    getAllRevisions.query(null, null, [:])
                 }
+
+                mc.static.findAllRevisions = { Map parameters ->
+                    getAllRevisions.query(null, null, parameters)
+                }
+
+                EnversPluginSupport.generateFindAllMethods(entity, sessionFactory)
+                EnversPluginSupport.generateAuditReaderMethods(entity, sessionFactory)
             }
         }
+    }
 
     void doWithApplicationContext() {
         // TODO Implement post initialization spring config (optional)
