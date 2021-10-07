@@ -33,7 +33,7 @@ class GetRevisionsQuery {
         this.clazz = clazz
     }
 
-    def query = { Long id ->
+    def query = { id ->
         AuditReader auditReader = AuditReaderFactory.get(sessionFactory.currentSession)
         return auditReader.getRevisions(clazz, id)
     }
