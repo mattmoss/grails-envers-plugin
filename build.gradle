@@ -8,7 +8,7 @@ buildscript {
     }
 }
 
-version "0.2-SNAPSHOT" // "0.1-SNAPSHOT"
+version "0.2-SNAPSHOT"
 group "org.grails.plugins"
 
 apply plugin:"eclipse"
@@ -25,7 +25,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-logging"
     compile "org.springframework.boot:spring-boot-autoconfigure"
     compile "org.grails:grails-core"
-    compile "org.hibernate:hibernate-envers:$enversVersion"
+    compile "org.hibernate:hibernate-envers"
     console "org.grails:grails-console"
     profile "org.grails.profiles:plugin"
     provided "org.grails:grails-plugin-services"
