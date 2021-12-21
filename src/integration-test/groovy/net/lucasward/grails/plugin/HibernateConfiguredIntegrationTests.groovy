@@ -32,7 +32,10 @@ class HibernateConfiguredIntegrationTests extends Specification {
         Address address = new Address(city:"New York", zip: "76051")
         address.save()
         Address myAddress = Address.findByCity("New York")
-        def results = Address.findAllRevisionsById(myAddress.id)
+        myAddress.city = "Grapevine"
+        myAddress.save(flush: true)
+        def results = Address.findAllRevisions()
+
 
         then:
         results.size() == 1
