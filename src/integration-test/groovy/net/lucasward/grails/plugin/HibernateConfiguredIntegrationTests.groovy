@@ -16,22 +16,25 @@
 
 package net.lucasward.grails.plugin
 
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
+import spock.lang.Specification
+
 /**
  * Tests to make sure that Hibernate Configured classes still work with this plugin
  */
-class HibernateConfiguredIntegrationTests {
+@Integration
+@Rollback
+class HibernateConfiguredIntegrationTests extends Specification {
 
-    void testBasicModification(){
-        Book.withTransaction {
-            Book book = new Book(title:"Dance With Dragons", author:"George R. R. Martin")
-            book.save()
-        }
+    void "testBasicModification"() {
+        when:
+        Address address = new Address(city:"New York", zip: "76051")
+        address.save()
+        Address myAddress = Address.findByCity("New York")
+        def results = Address.findAllRevisionsById(myAddress.id)
 
-
-        Book book = Book.findByTitle("Dance With Dragons")
-  //      assert book != null
-
-//        def results = Book.findAllRevisionsById(book.id)
-  //      assert results.size() == 1
+        then:
+        results.size() == 1
     }
 }

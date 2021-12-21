@@ -16,7 +16,8 @@
 
 package net.lucasward.grails.plugin
 
-import grails.test.mixin.integration.Integration
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
 import net.lucasward.grails.plugin.inheritance.BaseballPlayer
 import net.lucasward.grails.plugin.inheritance.entry.ProfessionalPerformanceYear
 import org.hibernate.Session
@@ -29,6 +30,7 @@ import org.hibernate.envers.AuditReaderFactory
  * complex inheritance and collections configurations using gorm
  */
 @Integration
+@Rollback
 class InheritanceIntegrationTests extends GroovyTestCase {
 
     def transactional = false
